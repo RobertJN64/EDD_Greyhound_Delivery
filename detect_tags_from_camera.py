@@ -1,4 +1,5 @@
 import cv_robot.vision as vision
+import numpy as np
 import time
 import cv2
 vision.activate_camera()
@@ -6,32 +7,41 @@ vision.activate_camera()
 dp = cv2.aruco.DetectorParameters()
 arucoDict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_5X5_250)
 ad = cv2.aruco.ArucoDetector(arucoDict, dp)
+criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
+
+objp = np.zeros((6*7,3), np.float32)
+objp[:,:2] = np.mgrid[0:7,0:6].T.reshape(-1,2)
+axis = np.float32([[3,0,0], [0,3,0], [0,0,-3]]).reshape(-1,3)
+
+def draw(img, corners, imgpts):
+    corner = tuple(corners[0].ravel())
+    img = cv2.line(img, corner, tuple(imgpts[0].ravel()), (255,0,0), 5)
+    img = cv2.line(img, corner, tuple(imgpts[1].ravel()), (0,255,0), 5)
+    img = cv2.line(img, corner, tuple(imgpts[2].ravel()), (0,0,255), 5)
+    return img
+
+def main():
 
 
-t = time.time()
-while True:
-    img = vision.get_camera_image()
-    corners, ids, rejected = ad.detectMarkers(img)
-    cv2.aruco.drawDetectedMarkers(img, corners, ids)
-    #cv2.aruco.drawDetectedMarkers(img, rejected)
-
-    cv2.imshow("Robert Ops", img)
-
-    cv2.waitKey(1)
-
-    print(f"FPS: {round(1 / (time.time() - t), 2)}")
     t = time.time()
+    while True:
+        img = vision.get_camera_image()
+        corners, ids, rejected = ad.detectMarkers(img)
+        cv2.aruco.drawDetectedMarkers(img, corners, ids)
+        #cv2.aruco.drawDetectedMarkers(img, rejected)
 
+        if ids is not None:
+            corners2 = cv2.cornerSubPix(img, corners, (11, 11), (-1, -1), criteria)
+            # Find the rotation and translation vectors.
+            ret, rvecs, tvecs = cv2.solvePnP(objp, corners2, mtx, dist)
+            # project 3D points to image plane
+            imgpts, jac = cv2.projectPoints(axis, rvecs, tvecs, mtx, dist)
+            img = draw(img, corners2, imgpts)
+        cv2.imshow("Robert Ops", img)
 
+        cv2.waitKey(1)
 
-# cv::Mat cameraMatrix, distCoeffs;
-# // You can read camera parameters from tutorial_camera_params.yml
-# readCameraParameters(cameraParamsFilename, cameraMatrix, distCoeffs); // This function is implemented in aruco_samples_utility.hpp
-# std::vector<cv::Vec3d> rvecs, tvecs;
-# // Set coordinate system
-# cv::Mat objPoints(4, 1, CV_32FC3);
-# ...
-# // Calculate pose for each marker
-# for (int i = 0; i < nMarkers; i++) {
-#     solvePnP(objPoints, corners.at(i), cameraMatrix, distCoeffs, rvecs.at(i), tvecs.at(i));
-# }
+        print(f"FPS: {round(1 / (time.time() - t), 2)}")
+        t = time.time()
+
+main()

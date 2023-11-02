@@ -5,9 +5,8 @@ import time
 import epsm
 import cv2
 
-
-
 vision.activate_camera()
+env = render3d.create_env()
 
 dp = cv2.aruco.DetectorParameters()
 arucoDict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_5X5_250)
@@ -31,7 +30,7 @@ def main():
 
 
     t = time.time()
-    for i in range(0, 100):
+    while True:
         img = vision.get_camera_image()
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         corners, ids, rejected = ad.detectMarkers(gray)
@@ -41,6 +40,9 @@ def main():
             rvecs, tvecs, _ = epsm.estimatePoseSingleMarkers(corners, 3, mtx, dist)
             for rvec, tvec in zip(rvecs, tvecs):
                 cv2.drawFrameAxes(img, mtx, dist, rvec, tvec, 1)
+            render3d.update(tvecs, env)
+        else:
+            render3d.update_no_tags(env)
 
 
         cv2.imshow("Robert Ops", img)
@@ -50,6 +52,6 @@ def main():
         print(f"FPS: {round(1 / (time.time() - t), 2)}")
         t = time.time()
 
-    render3d.plot_3d_enviroment(tvecs)
+
 
 main()

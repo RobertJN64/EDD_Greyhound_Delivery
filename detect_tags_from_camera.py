@@ -1,7 +1,12 @@
 import cv_robot.vision as vision
 import numpy as np
+import render3d
 import time
+import epsm
 import cv2
+
+
+
 vision.activate_camera()
 
 dp = cv2.aruco.DetectorParameters()
@@ -26,23 +31,17 @@ def main():
 
 
     t = time.time()
-    while True:
+    for i in range(0, 100):
         img = vision.get_camera_image()
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        ret, corners = cv2.findChessboardCorners(gray, (5,5), None)
-        #corners, ids, rejected = ad.detectMarkers(img)
-        #cv2.aruco.drawDetectedMarkers(img, corners, ids)
-        #cv2.aruco.drawDetectedMarkers(img, rejected)
+        corners, ids, rejected = ad.detectMarkers(gray)
+        cv2.aruco.drawDetectedMarkers(img, corners, ids)
 
-        print(corners)
+        if len(corners) > 0:
+            rvecs, tvecs, _ = epsm.estimatePoseSingleMarkers(corners, 3, mtx, dist)
+            for rvec, tvec in zip(rvecs, tvecs):
+                cv2.drawFrameAxes(img, mtx, dist, rvec, tvec, 1)
 
-        if ret:
-            corners2 = cv2.cornerSubPix(gray, corners, (11, 11), (-1, -1), criteria)
-            # Find the rotation and translation vectors.
-            ret, rvecs, tvecs = cv2.solvePnP(objp, corners2, mtx, dist)
-            # project 3D points to image plane
-            imgpts, jac = cv2.projectPoints(axis, rvecs, tvecs, mtx, dist)
-            img = draw(img, corners2, imgpts)
 
         cv2.imshow("Robert Ops", img)
 
@@ -50,5 +49,7 @@ def main():
 
         print(f"FPS: {round(1 / (time.time() - t), 2)}")
         t = time.time()
+
+    render3d.plot_3d_enviroment(tvecs)
 
 main()

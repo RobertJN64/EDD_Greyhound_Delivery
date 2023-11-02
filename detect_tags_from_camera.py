@@ -21,22 +21,29 @@ def draw(img, corners, imgpts):
     return img
 
 def main():
+    mtx = np.loadtxt('calib_images/laptop/calib_mtx.calib')
+    dist = np.loadtxt('calib_images/laptop/calib_dist.calib')
 
 
     t = time.time()
     while True:
         img = vision.get_camera_image()
-        corners, ids, rejected = ad.detectMarkers(img)
-        cv2.aruco.drawDetectedMarkers(img, corners, ids)
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        ret, corners = cv2.findChessboardCorners(gray, (5,5), None)
+        #corners, ids, rejected = ad.detectMarkers(img)
+        #cv2.aruco.drawDetectedMarkers(img, corners, ids)
         #cv2.aruco.drawDetectedMarkers(img, rejected)
 
-        if ids is not None:
-            corners2 = cv2.cornerSubPix(img, corners, (11, 11), (-1, -1), criteria)
+        print(corners)
+
+        if ret:
+            corners2 = cv2.cornerSubPix(gray, corners, (11, 11), (-1, -1), criteria)
             # Find the rotation and translation vectors.
             ret, rvecs, tvecs = cv2.solvePnP(objp, corners2, mtx, dist)
             # project 3D points to image plane
             imgpts, jac = cv2.projectPoints(axis, rvecs, tvecs, mtx, dist)
             img = draw(img, corners2, imgpts)
+
         cv2.imshow("Robert Ops", img)
 
         cv2.waitKey(1)

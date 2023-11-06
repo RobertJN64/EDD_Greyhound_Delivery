@@ -45,7 +45,7 @@ def main():
             for rvec, tvec in zip(rvecs, tvecs):
                 cv2.drawFrameAxes(img, mtx, dist, rvec, tvec, 1)
             if RENDER_LOOP:
-                render3d.update(tvecs, rvecs, env)
+                render3d.update(ids, tvecs, rvecs, env)
         else:
             if RENDER_LOOP:
                 render3d.update_no_tags(env)

@@ -1,13 +1,15 @@
 import cv2
 import matplotlib.pyplot as plt
 
+c_matrix = ['red', 'orange', 'blue', 'black']
+
 def create_env():
     fig = plt.figure()
     ax = fig.add_subplot(projection='3d')
     plt.show(block=False)
     return ax
 
-def update(tags, tag_rvecs, ax):
+def update(ids, tags, tag_rvecs, ax):
     ax.clear()
     def compute_corner_offset(xbase, ybase, zbase, xoff, yoff, zoff, rot):
         return (
@@ -16,7 +18,7 @@ def update(tags, tag_rvecs, ax):
             rot[2][0] * xoff + rot[2][1] * yoff + rot[2][2] * zoff + zbase
         )
 
-    def render_tag(x, y, z, rot):
+    def render_tag(x, y, z, rot, color):
         xd = [-1.5, 1.5, 1.5, -1.5, -1.5]
         yd = [-1.5, -1.5, 1.5, 1.5, -1.5]
         zd = [0, 0, 0, 0, 0]
@@ -31,11 +33,11 @@ def update(tags, tag_rvecs, ax):
             ys.append(-ydd)
             zs.append(zdd)
 
-        ax.plot(xs, zs, ys) #camera y = z
+        ax.plot(xs, zs, ys, c=color) #camera y = z
 
-    for tag, rvec in zip(tags, tag_rvecs):
+    for index, tag, rvec in zip(ids, tags, tag_rvecs):
         rot_matrix = cv2.Rodrigues(rvec)[0]
-        render_tag(*tag, rot_matrix)
+        render_tag(*tag, rot_matrix, c_matrix[index[0]])
 
     #tags.append([0,0,0]) #camera pos
     # ax.set_xlim(min([tag[0] for tag in tags]) - 10, max([tag[0] for tag in tags]) + 10)
@@ -43,7 +45,7 @@ def update(tags, tag_rvecs, ax):
     # ax.set_zlim(min([tag[1] for tag in tags]) - 10, max([tag[1] for tag in tags]) + 10)
     ax.set_xlim(-25, 25)
     ax.set_ylim(-10, 40)
-    ax.set_zlim(-25, 25)
+    ax.set_zlim(-5, 45)
 
     #ax.scatter3D([0],[0],[0], s=10)
     ax.quiver(0, 0, 0, 0, 5, 0)
@@ -51,4 +53,4 @@ def update(tags, tag_rvecs, ax):
     plt.pause(0.01)
 
 def update_no_tags(ax):
-    update([], [], ax)
+    update([], [], [], ax)

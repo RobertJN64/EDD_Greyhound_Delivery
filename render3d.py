@@ -1,3 +1,4 @@
+import cv2
 import matplotlib.pyplot as plt
 
 def create_env():
@@ -6,19 +7,37 @@ def create_env():
     plt.show(block=False)
     return ax
 
-def update(tags, ax):
+def update(tags, tag_rvecs, ax):
     ax.clear()
-    def render_tag(x, y, z):
-        ax.plot([x-1.5, x+1.5, x+1.5, x-1.5, x-1.5],
-                [z, z, z, z, z], #camera z = y
-                [y-1.5, y-1.5, y+1.5, y+1.5, y-1.5]) #camera y = z
+    def compute_corner_offset(xbase, ybase, zbase, xoff, yoff, zoff, rot):
+        return (
+            rot[0][0] * xoff + rot[0][1] * yoff + rot[0][2] * zoff + xbase,
+            rot[1][0] * xoff + rot[1][1] * yoff + rot[1][2] * zoff + ybase,
+            rot[2][0] * xoff + rot[2][1] * yoff + rot[2][2] * zoff + zbase
+        )
 
-    for tag in tags:
-        tag[1] = -tag[1]
-        render_tag(*tag)
+    def render_tag(x, y, z, rot):
+        xd = [-1.5, 1.5, 1.5, -1.5, -1.5]
+        yd = [-1.5, -1.5, 1.5, 1.5, -1.5]
+        zd = [0, 0, 0, 0, 0]
 
-    tags.append([0,0,0]) #camera pos
+        xs = []
+        ys = []
+        zs = []
 
+        for i in range(0, 5):
+            xdd, ydd, zdd = compute_corner_offset(x, y, z, xd[i], yd[i], zd[i], rot)
+            xs.append(xdd)
+            ys.append(-ydd)
+            zs.append(zdd)
+
+        ax.plot(xs, zs, ys) #camera y = z
+
+    for tag, rvec in zip(tags, tag_rvecs):
+        rot_matrix = cv2.Rodrigues(rvec)[0]
+        render_tag(*tag, rot_matrix)
+
+    #tags.append([0,0,0]) #camera pos
     # ax.set_xlim(min([tag[0] for tag in tags]) - 10, max([tag[0] for tag in tags]) + 10)
     # ax.set_ylim(min([tag[2] for tag in tags]) - 10, max([tag[2] for tag in tags]) + 10)
     # ax.set_zlim(min([tag[1] for tag in tags]) - 10, max([tag[1] for tag in tags]) + 10)
@@ -32,4 +51,4 @@ def update(tags, ax):
     plt.pause(0.01)
 
 def update_no_tags(ax):
-    update([], ax)
+    update([], [], ax)

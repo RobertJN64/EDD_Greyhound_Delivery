@@ -5,8 +5,11 @@ import time
 import epsm
 import cv2
 
+RENDER_LOOP = True
+
 vision.activate_camera()
-env = render3d.create_env()
+if RENDER_LOOP:
+    env = render3d.create_env()
 
 dp = cv2.aruco.DetectorParameters()
 arucoDict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_5X5_250)
@@ -38,18 +41,21 @@ def main():
 
         if len(corners) > 0:
             rvecs, tvecs, _ = epsm.estimatePoseSingleMarkers(corners, 3, mtx, dist)
+
             for rvec, tvec in zip(rvecs, tvecs):
                 cv2.drawFrameAxes(img, mtx, dist, rvec, tvec, 1)
-            render3d.update(tvecs, env)
+            if RENDER_LOOP:
+                render3d.update(tvecs, rvecs, env)
         else:
-            render3d.update_no_tags(env)
+            if RENDER_LOOP:
+                render3d.update_no_tags(env)
 
 
         cv2.imshow("Robert Ops", img)
 
         cv2.waitKey(1)
 
-        print(f"FPS: {round(1 / (time.time() - t), 2)}")
+        #print(f"FPS: {round(1 / (time.time() - t), 2)}")
         t = time.time()
 
 

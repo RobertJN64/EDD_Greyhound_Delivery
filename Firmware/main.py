@@ -1,10 +1,13 @@
 import robot
 import time
-import imu
-
 
 robot = robot.Robot()
-imu.start_monitor_thread(robot)
 while True:
-    print(f"{robot.imu_angle=} {robot.imu_calib=} {robot.reset_imu=}")
+    print(f"{robot.imu.angle=} {robot.imu.should_calibrate=} {robot.imu.should_reset=}")
+    k = input("[r]eset / [c]alibrate / [k]ill")
+    robot.imu.should_reset = (robot.imu.should_reset or k == 'r')
+    robot.imu.should_calibrate = (robot.imu.should_calibrate or k == 'c')
+    if k == 'k':
+        robot.kill()
+        break
     time.sleep(0.1)

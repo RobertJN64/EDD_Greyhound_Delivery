@@ -1,8 +1,9 @@
+#from imu import IMU_Emulator as IMU
+from imu import IMU as IMU
 
 class Robot:
     def __init__(self):
-        self.kill = False
+        self.imu = IMU()
 
-        self.imu_angle = 0
-        self.reset_imu = False
-        self.imu_calib = False
+    def kill(self):
+        self.imu.should_kill = True

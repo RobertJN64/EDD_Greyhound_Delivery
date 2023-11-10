@@ -1,5 +1,4 @@
-from robot import Robot
-import threading
+from subsystem import Subsystem
 import time
 
 scale_f = 0.8
@@ -17,14 +16,51 @@ GYRO_XOUT_H = 0x43
 GYRO_YOUT_H = 0x45
 GYRO_ZOUT_H = 0x47
 
-class IMU:
-    def __init__(self, robot: Robot):
+class IMU_Emulator(Subsystem):
+    def __init__(self):
+        self.angle = 0
+        self.gyrototal = 0 #internal angle rep
+        self.drift = 0
+        self.should_calibrate = True
+        self.should_reset = False
+        super().__init__()
+
+    def setup(self):
+        pass
+
+    def calibrate(self):
+        self.reset()
+        time.sleep(5)
+        self.should_calibrate = False
+
+    def reset(self):
+        self.gyrototal = 0
+        self.angle = 0
+        self.should_reset = False
+
+    def read(self):
+        self.angle += 1
+        self.angle = self.angle % 360
+        time.sleep(0.5)
+
+    def loop(self):
+        while not self.should_kill:
+            print("Calibrating IMU...")
+            self.calibrate()
+            while not (self.should_kill or self.should_calibrate):
+                self.read()
+                if self.should_reset:
+                    print("Reset IMU angle...")
+                    self.reset()
+
+class IMU(IMU_Emulator):
+    def __init__(self):
         import smbus
-        self.robot = robot
         self.bus = smbus.SMBus(1)  # or bus = smbus.SMBus(0) for older version boards
         self.Device_Address = 0x68  # MPU6050 device address
+        super().__init__()
 
-    def init(self):
+    def setup(self):
         # write to sample rate register
         self.bus.write_byte_data(self.Device_Address, SMPLRT_DIV, 7)
 
@@ -53,76 +89,25 @@ class IMU:
             value -= 65536
         return value
 
-    def read(self):
-        while True:
-            self.robot.imu_calib = True
-            gyrototal = 0
-            print("CALIBRATING...")
-            drift = 0
+    def calibrate(self):
+        self.reset()
+        self.drift = 0
+        for i in range(0, 100):
+            t = time.time()
+            gyro_z = self.read_raw_data(GYRO_ZOUT_H)
+            # Full scale range +/- 250 degree/C as per sensitivity scale factor
+            Gz = (gyro_z / 131.0) * scale_f
+            self.drift += Gz
+            time.sleep(0.05 - (time.time() - t))
 
-            for i in range(0, 100):
-                t = time.time()
-                gyro_z = self.read_raw_data(GYRO_ZOUT_H)
-                # Full scale range +/- 250 degree/C as per sensitivity scale factor
-                Gz = (gyro_z / 131.0) * scale_f
-                drift += Gz
-                time.sleep(0.05 - (time.time() - t))
-
-            drift /= 100
-            self.robot.imu_calib = False
-
-            while not self.robot.imu_calib:
-                t = time.time()
-                gyro_z = self.read_raw_data(GYRO_ZOUT_H)
-                # Full scale range +/- 250 degree/C as per sensitivity scale factor
-                Gz = (gyro_z / 131.0) * scale_f
-                gyrototal -= (Gz - drift)/2
-                self.robot.imu_angle = round(gyrototal, 3) % 360
-                time.sleep(0.05 - (time.time() - t))
-            
-                if self.robot.reset_imu:
-                    gyrototal = 0
-                    self.robot.imu_angle = 0
-                    self.robot.reset_imu = False
-
-                if self.robot.kill:
-                    break
-            if self.robot.kill:
-                break
-
-class IMU_Emulator:
-    def __init__(self, robot: Robot):
-        self.robot = robot
-
-    def init(self):
-        pass
+        self.drift /= 100
+        self.should_calibrate = False
 
     def read(self):
-        while True:
-            self.robot.imu_calib = True
-            time.sleep(5)
-            self.robot.imu_calib = False
-            self.robot.imu_angle = 0
-
-            while not self.robot.imu_calib:
-                self.robot.imu_angle += 10
-                self.robot.imu_angle = self.robot.imu_angle%360
-                time.sleep(5)
-                if self.robot.reset_imu:
-                    self.robot.imu_angle = 0
-                    self.robot.reset_imu = False
-                if self.robot.kill:
-                    break
-            if self.robot.kill:
-                break
-
-
-def IMU_worker(robot):
-    imu = IMU(robot)
-    #imu = IMU_Emulator(robot)
-    imu.init()
-    imu.read()
-
-
-def start_monitor_thread(robot):
-    threading.Thread(target=IMU_worker, args=[robot]).start()
+        t = time.time()
+        gyro_z = self.read_raw_data(GYRO_ZOUT_H)
+        # Full scale range +/- 250 degree/C as per sensitivity scale factor
+        Gz = (gyro_z / 131.0) * scale_f
+        self.gyrototal -= (Gz - self.drift) / 2
+        self.angle = round(self.gyrototal, 3) % 360
+        time.sleep(0.05 - (time.time() - t))

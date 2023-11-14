@@ -29,11 +29,21 @@ class IMU_Emulator(Subsystem):
         pass
 
     def calibrate(self):
-        self.reset()
+        """Trigger an async calibration"""
+        self.should_calibrate = True
+
+    def reset(self):
+        """Trigger an async reset"""
+        self.should_reset = True
+
+    def _calibrate(self):
+        """Internal calibration function - to trigger a calibrate call .calibrate()"""
+        self._reset()
         time.sleep(5)
         self.should_calibrate = False
 
-    def reset(self):
+    def _reset(self):
+        """Internal reset function - to trigger a reset call .reset()"""
         self.gyrototal = 0
         self.angle = 0
         self.should_reset = False
@@ -46,12 +56,12 @@ class IMU_Emulator(Subsystem):
     def loop(self):
         while not self.should_kill:
             print("Calibrating IMU...")
-            self.calibrate()
+            self._calibrate()
             while not (self.should_kill or self.should_calibrate):
                 self.read()
                 if self.should_reset:
                     print("Reset IMU angle...")
-                    self.reset()
+                    self._reset()
 
 class IMU(IMU_Emulator):
     def __init__(self):
@@ -61,6 +71,7 @@ class IMU(IMU_Emulator):
         super().__init__()
 
     def setup(self):
+        """Setup I2C bus for IMU"""
         # write to sample rate register
         self.bus.write_byte_data(self.Device_Address, SMPLRT_DIV, 7)
 
@@ -89,8 +100,9 @@ class IMU(IMU_Emulator):
             value -= 65536
         return value
 
-    def calibrate(self):
-        self.reset()
+    def _calibrate(self):
+        """Internal calibration function - to trigger a calibrate call .calibrate()"""
+        self._reset()
         self.drift = 0
         for i in range(0, 100):
             t = time.time()

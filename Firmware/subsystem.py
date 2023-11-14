@@ -13,3 +13,7 @@ class Subsystem:
 
     def loop(self):
         pass
+
+    def kill(self):
+        """Trigger an async kill"""
+        self.should_kill = True

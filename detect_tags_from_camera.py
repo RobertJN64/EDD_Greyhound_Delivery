@@ -5,6 +5,8 @@ import time
 import epsm
 import cv2
 
+import read_camera
+
 RENDER_LOOP = True
 
 vision.activate_camera()
@@ -34,7 +36,8 @@ def main():
 
     t = time.time()
     while True:
-        img = vision.get_camera_image()
+        #img = vision.get_camera_image()
+        img = read_camera.get_image()
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         corners, ids, rejected = ad.detectMarkers(gray)
         cv2.aruco.drawDetectedMarkers(img, corners, ids)
@@ -51,11 +54,11 @@ def main():
                 render3d.update_no_tags(env)
 
 
-        cv2.imshow("Robert Ops", img)
+        cv2.imshow("Robert Ops", cv2.resize(img, (900,600)))
 
         cv2.waitKey(1)
 
-        #print(f"FPS: {round(1 / (time.time() - t), 2)}")
+        print(f"FPS: {round(1 / (time.time() - t), 2)}")
         t = time.time()
 
 

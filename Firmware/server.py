@@ -1,5 +1,4 @@
 from robot import Robot
-from flask import request
 import flask
 import json
 

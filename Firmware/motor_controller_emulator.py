@@ -4,9 +4,6 @@ class MotorController_Emulator:
         self.revPin = revPin
         self.spdPin = spdPin
 
-    def setup(self):
-        pass
-
     def forward(self, speed):
         print(f"Running motors forward at {speed=}")
 

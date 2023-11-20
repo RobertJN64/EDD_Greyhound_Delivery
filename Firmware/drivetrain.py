@@ -18,10 +18,6 @@ class DT_Emulator(Subsystem):
         self.right_motor = mc_class(RightMotor.fwd_pin, RightMotor.rev_pin, RightMotor.spd_pin)
         super().__init__()
 
-    def setup(self):
-        self.left_motor.setup()
-        self.right_motor.setup()
-
     def loop(self):
         while not self.should_kill:
             pass

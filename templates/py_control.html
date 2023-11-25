@@ -44,7 +44,9 @@
 
 <script>
   function quick_action(stack) {
-    console.log(stack);
+    var request = new XMLHttpRequest();
+    request.open("GET", '/quick_action/' + stack);
+    request.send();
   }
 </script>
 

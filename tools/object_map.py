@@ -19,8 +19,9 @@ class ObjectMap:
         for attr in [x for x in dir(obj) if filter_func(x)]:
             inst = getattr(obj, attr)
             if hasattr(inst, '__call__'):
-                self.func_dict[attr] = (inst, inst.__code__.co_varnames[1:]) #ignore self param
-            elif isinstance(inst, (int, float, str, bool)):
+                self.func_dict[attr] = (
+                inst, inst.__code__.co_varnames[1:inst.__code__.co_argcount])  # ignore self param
+            elif isinstance(inst, (int, float, str, bool, list, dict)) or inst is None:
                 self.var_list.append(attr)
             else:
                 # using .__class__ allows superclassing

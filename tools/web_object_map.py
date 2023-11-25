@@ -41,7 +41,7 @@ class WebObjectMap(ObjectMap):
     def get_status(self):
         retval = {}
         for var_name in self.var_list:
-            retval[self.name + '.' + var_name] = getattr(self.obj, var_name)
+            retval[self.name + '.' + var_name] = str(getattr(self.obj, var_name))
         for obj in self.subobj_dict.values():
             retval.update(obj.get_status())
         return retval

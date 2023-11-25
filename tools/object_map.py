@@ -9,7 +9,7 @@ class ObjectMap:
         for name in [x for x in dir(obj) if x[0] != '_']:
             inst = getattr(obj, name)
             if hasattr(inst, '__call__'):
-                self.func_dict[name] = (inst, inst.__code__.co_varnames)
+                self.func_dict[name] = (inst, inst.__code__.co_varnames[1:]) #ignore self param
             elif isinstance(inst, (int, float, str, bool)):
                 self.var_dict[name] = (obj, name)
             else:

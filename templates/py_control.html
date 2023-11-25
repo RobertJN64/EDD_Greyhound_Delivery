@@ -35,6 +35,11 @@
       border-radius: 8px;
       background-color: blue;
     }
+
+    .input_label {
+      margin-left: 10px;
+      margin-right: 5px;
+    }
   </style>
 </head>
 
@@ -44,8 +49,15 @@
 
 <script>
   function quick_action(stack) {
+    var elems = document.getElementsByClassName("py_" + stack)
+    url = new URL(location.origin + '/quick_action/' + stack)
+
+    for (var e of elems) {
+      url.searchParams.append(e.id.split('|')[1], e.value);
+    }
+
     var request = new XMLHttpRequest();
-    request.open("GET", '/quick_action/' + stack);
+    request.open("GET", url);
     request.send();
   }
 </script>

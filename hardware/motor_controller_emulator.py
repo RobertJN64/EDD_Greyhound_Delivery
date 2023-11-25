@@ -11,7 +11,7 @@ class MotorController_Emulator:
         print(f"Running motors backward at {speed=}")
 
     def stop(self):
-        print("Stopping motors")
+        print("Stopping motor")
 
 
     def set_speed(self, speed):

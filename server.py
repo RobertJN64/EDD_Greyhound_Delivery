@@ -1,5 +1,5 @@
 from flask import request
-from robot import Robot
+from hardware.robot import Robot
 import flask
 import json
 

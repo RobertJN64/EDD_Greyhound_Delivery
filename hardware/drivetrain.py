@@ -1,5 +1,5 @@
-from motor_controller_emulator import MotorController_Emulator as MotorController_Emulator
-from subsystem import Subsystem
+from hardware.motor_controller_emulator import MotorController_Emulator as MotorController_Emulator
+from hardware.subsystem import Subsystem
 
 class LeftMotor:
     fwd_pin = 11
@@ -34,5 +34,5 @@ class DT_Emulator(Subsystem):
 
 class DT(DT_Emulator):
     def __init__(self):
-        from motor_controller import MotorController
+        from hardware.motor_controller import MotorController
         super().__init__(mc_class=MotorController)

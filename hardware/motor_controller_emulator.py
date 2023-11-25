@@ -5,10 +5,10 @@ class MotorController_Emulator:
         self.spdPin = spdPin
 
     def forward(self, speed):
-        print(f"Running motors forward at {speed=}")
+        print(f"Running motor forward at {speed=}")
 
     def backward(self, speed):
-        print(f"Running motors backward at {speed=}")
+        print(f"Running motor backward at {speed=}")
 
     def stop(self):
         print("Stopping motor")

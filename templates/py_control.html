@@ -82,7 +82,7 @@
 <script>
   function quick_action(stack) {
     var elems = document.getElementsByClassName("py_" + stack)
-    url = new URL(location.origin + '/quick_action/' + stack)
+    url = new URL(location.origin + '/py_control/quick_action/' + stack)
 
     for (var e of elems) {
       url.searchParams.append(e.id.split('|')[1], e.value);
@@ -92,6 +92,34 @@
     request.open("GET", url);
     request.send();
   }
+
+  function get_request_async(url, done) {
+    var request = new XMLHttpRequest();
+    request.open("GET", url);
+
+    request.onload = function () {
+      done(request.responseText)
+    }
+    request.onerror = function () { }
+    request.send();
+  }
+
+  function update_vars(json) {
+    json = JSON.parse(json);
+
+    for (key of Object.keys(json)) {
+      document.getElementById("py_" + key).innerHTML = json[key];
+    }
+
+  }
+
+
+  function update_vars_async() {
+    get_request_async('/py_control/get_status', update_vars)
+  }
+
+  setInterval(update_vars_async, 500)
+  update_vars_async();
 </script>
 
 </html>

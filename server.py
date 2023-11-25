@@ -9,7 +9,7 @@ robot = Robot()
 def home():
     return "OK"
 
-create_WebObjectMap_server(app, 'Robot', robot)
+create_WebObjectMap_server(app, 'Robot', robot, include_private=True)
 
 def startFlask():
     app.run(host="0.0.0.0", port=80)

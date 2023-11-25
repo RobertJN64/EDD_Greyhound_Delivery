@@ -39,16 +39,15 @@ class WebObjectMap(ObjectMap):
         """)
 
     def get_status(self):
-        update = {}
+        retval = {}
         for var_name in self.var_list:
-            update[var_name] = getattr(self.obj, var_name)
-        for name, obj in self.subobj_dict.items():
-            for sub_name, ref in obj.get_status().items():
-                update[name + '.' + sub_name] = ref
-        return update
+            retval[self.name + '.' + var_name] = getattr(self.obj, var_name)
+        for obj in self.subobj_dict.values():
+            retval.update(obj.get_status())
+        return retval
 
-def create_WebObjectMap_server(flask_app, name, obj):
-    wom = WebObjectMap(name, obj)
+def create_WebObjectMap_server(flask_app, name, obj, include_private=False):
+    wom = WebObjectMap(name, obj, include_private)
 
     py_control_content = wom.generate_html()
 
@@ -56,10 +55,13 @@ def create_WebObjectMap_server(flask_app, name, obj):
     def py_control():
         return flask.render_template('py_control.html', content=py_control_content)
 
-    @flask_app.route('/quick_action/<action>')
+    @flask_app.route('/py_control/quick_action/<action>')
     def quick_action(action):
         kwargs = {argname: int(arg) for argname, arg in flask.request.args.items()}
         wom.call_function(action, kwargs)
         return "OK"
 
+    @flask_app.route('/py_control/get_status')
+    def get_status():
+        return wom.get_status()
 

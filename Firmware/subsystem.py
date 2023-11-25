@@ -2,18 +2,13 @@ import threading
 
 class Subsystem:
     def __init__(self):
-        print(f"Creating a subsystem of class: {self.__class__}")
-        self.should_kill = False
-        self.setup()
-        print(f"Subsystem setup complete, starting subsystem loop")
+        print(f"Created a subsystem of class: {self.__class__}")
+        self._should_kill = False
         threading.Thread(target=self.loop).start()
 
-    def setup(self):
-        pass
-
     def loop(self):
-        pass
+        print(f"Did you forget to override subsystem loop for {self.__class__}")
 
     def kill(self):
         """Trigger an async kill"""
-        self.should_kill = True
+        self._should_kill = True

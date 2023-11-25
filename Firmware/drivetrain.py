@@ -19,7 +19,7 @@ class DT_Emulator(Subsystem):
         super().__init__()
 
     def loop(self):
-        while not self.should_kill:
+        while not self._should_kill:
             pass
         self.left_motor.stop()
         self.right_motor.stop()

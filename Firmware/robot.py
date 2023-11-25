@@ -1,7 +1,11 @@
-from drivetrain import DT_Emulator as DT
-from imu import IMU_Emulator as IMU
-#from drivetrain import DT as DT
-#from imu import IMU as IMU
+EMULATE = True
+
+if EMULATE:
+    from drivetrain import DT_Emulator as DT
+    from imu import IMU_Emulator as IMU
+else:
+    from drivetrain import DT as DT
+    from imu import IMU as IMU
 
 class Robot:
     def __init__(self):

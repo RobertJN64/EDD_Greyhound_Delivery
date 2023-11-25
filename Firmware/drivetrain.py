@@ -14,23 +14,23 @@ class RightMotor:
 
 class DT_Emulator(Subsystem):
     def __init__(self, mc_class = MotorController_Emulator):
-        self.left_motor = mc_class(LeftMotor.fwd_pin, LeftMotor.rev_pin, LeftMotor.spd_pin)
-        self.right_motor = mc_class(RightMotor.fwd_pin, RightMotor.rev_pin, RightMotor.spd_pin)
+        self._left_motor = mc_class(LeftMotor.fwd_pin, LeftMotor.rev_pin, LeftMotor.spd_pin)
+        self._right_motor = mc_class(RightMotor.fwd_pin, RightMotor.rev_pin, RightMotor.spd_pin)
         super().__init__()
 
-    def loop(self):
+    def _loop(self):
         while not self._should_kill:
             pass
-        self.left_motor.stop()
-        self.right_motor.stop()
+        self._left_motor.stop()
+        self._right_motor.stop()
 
     def set_speeds(self, left, right):
-        self.left_motor.set_speed(left)
-        self.right_motor.set_speed(right)
+        self._left_motor.set_speed(left)
+        self._right_motor.set_speed(right)
 
     def stop(self):
-        self.left_motor.stop()
-        self.right_motor.stop()
+        self._left_motor.stop()
+        self._right_motor.stop()
 
 class DT(DT_Emulator):
     def __init__(self):

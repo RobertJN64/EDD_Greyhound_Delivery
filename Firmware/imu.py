@@ -50,17 +50,17 @@ class IMU_Emulator(Subsystem):
         self.angle = self._reset_target_angle
         self._should_reset = False
 
-    def read(self):
+    def _read(self):
         self.angle += 1
         self.angle = self.angle % 360
         time.sleep(0.5)
 
-    def loop(self):
+    def _loop(self):
         while not self._should_kill:
             print("Calibrating IMU...")
             self._calibrate()
             while not (self._should_kill or self._should_calibrate):
-                self.read()
+                self._read()
                 if self._should_reset:
                     print("Reset IMU angle...")
                     self._reset()
@@ -82,7 +82,7 @@ class IMU(IMU_Emulator):
         super().__init__()
 
 
-    def read_raw_data(self, addr):
+    def _read_raw_data(self, addr):
         # Accelero and Gyro value are 16-bit
         high = self.bus.read_byte_data(MPU6050.Device_Address, addr)
         low = self.bus.read_byte_data(MPU6050.Device_Address, addr + 1)
@@ -110,9 +110,9 @@ class IMU(IMU_Emulator):
         self._drift /= 100
         self.should_calibrate = False
 
-    def read(self):
+    def _read(self):
         t = time.time()
-        gyro_z = self.read_raw_data(MPU6050.GYRO_ZOUT_H)
+        gyro_z = self._read_raw_data(MPU6050.GYRO_ZOUT_H)
         # Full scale range +/- 250 degree/C as per sensitivity scale factor
         Gz = (gyro_z / 131.0) * scale_f
         self._gyrototal -= (Gz - self._drift) / 2

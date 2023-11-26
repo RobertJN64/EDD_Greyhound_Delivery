@@ -1,4 +1,4 @@
-from tools.web_object_map import create_WebObjectMap_server
+from PyObjectInterface.WebController import create_WebController
 from hardware.robot import Robot
 import flask
 
@@ -9,7 +9,7 @@ robot = Robot()
 def home():
     return "OK"
 
-create_WebObjectMap_server(app, 'Robot', robot, include_private=True)
+create_WebController(robot, 'robot', app)
 
 def startFlask():
     app.run(host="0.0.0.0", port=80)

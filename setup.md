@@ -41,6 +41,7 @@ Add line:
 ## OpenCV
 
 ```commandline
-pip install opencv-python
 sudo pip install opencv-python
+sudo pip install PyObjectInterface
+sudo pip install --upgrade typing_extensions
 ```

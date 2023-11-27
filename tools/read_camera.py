@@ -17,8 +17,8 @@ def increase_brightness(img, value=30):
     return img
 
 
-def get_image():
-    jpg_original = base64.b64decode(requests.get('http://' + '192.168.137.240' + '/camera').text)
+def get_image(ip: str):
+    jpg_original = base64.b64decode(requests.get('http://' + ip + '/camera').text)
     jpg_as_np = np.frombuffer(jpg_original, dtype=np.uint8)
     image_buffer = cv2.imdecode(jpg_as_np, flags=1)
     adjusted = cv2.convertScaleAbs(image_buffer, alpha=1.5, beta=0.5)
@@ -28,6 +28,6 @@ def get_image():
 if __name__ == '__main__':
     while True:
         t = time.time()
-        cv2.imshow("Robert Ops", get_image())
+        cv2.imshow("Robert Ops", get_image('127.0.0.1'))
         cv2.waitKey(1)
         print(f"FPS: {round(1 / (time.time() - t), 2)}")

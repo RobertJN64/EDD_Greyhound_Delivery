@@ -1,5 +1,5 @@
 from hardware.motor_controller_emulator import MotorController_Emulator as MotorController_Emulator
-from hardware.subsystem import Subsystem
+from subsystem import Subsystem
 
 class LeftMotor:
     fwd_pin = 11

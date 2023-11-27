@@ -1,4 +1,4 @@
-from hardware.subsystem import Subsystem
+from subsystem import Subsystem
 import time
 
 scale_f = 0.8

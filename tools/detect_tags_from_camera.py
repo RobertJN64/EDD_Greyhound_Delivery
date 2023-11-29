@@ -1,14 +1,14 @@
 import read_camera
 import numpy as np
-#import render3d
+import render3d
 import time
 import epsm
 import cv2
 
-RENDER_LOOP = False
-#
-# if RENDER_LOOP:
-#     env = render3d.create_env()
+RENDER_LOOP = True
+
+if RENDER_LOOP:
+    env = render3d.create_env()
 
 dp = cv2.aruco.DetectorParameters()
 arucoDict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_5X5_250)
@@ -43,11 +43,11 @@ def main():
 
             for rvec, tvec in zip(rvecs, tvecs):
                 cv2.drawFrameAxes(img, mtx, dist, rvec, tvec, 1)
-        #     if RENDER_LOOP:
-        #         render3d.update(ids, tvecs, rvecs, env)
-        # else:
-        #     if RENDER_LOOP:
-        #         render3d.update_no_tags(env)
+            if RENDER_LOOP:
+                render3d.update(ids, tvecs, rvecs, env)
+        else:
+            if RENDER_LOOP:
+                render3d.update_no_tags(env)
 
 
         cv2.imshow("Robert Ops", cv2.resize(img, (900,600)))

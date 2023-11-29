@@ -21,6 +21,6 @@ def get_camera_array_fast():
 create_WebController(robot, 'robot', app, create_private_interface=False)
 
 def startFlask():
-    app.run(host="0.0.0.0", port=80)
+    app.run(host="0.0.0.0", port=80) #TODO - flask debug
 
 startFlask()

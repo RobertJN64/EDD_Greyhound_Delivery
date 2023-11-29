@@ -1,5 +1,7 @@
 import threading
+import time
 import cv2
+
 
 class Camera:
     def __init__(self):
@@ -9,12 +11,13 @@ class Camera:
     # grab frames as soon as they are available - this clears out the automatic buffer an ensures read is always recent
     def _reader(self):
         while True:
-            ret = self._cap.grab()
-            if not ret:
-                break
+            self._cap.grab()
+            time.sleep(0.01)
 
     # retrieve latest frame
     def read(self):
+        t = time.time()
         self._cap.grab()
         ret, frame = self._cap.retrieve()
+        print(time.time() - t)
         return frame

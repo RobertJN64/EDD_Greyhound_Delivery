@@ -1,17 +1,14 @@
-import cv_robot.vision as vision
+import read_camera
 import numpy as np
-import render3d
+#import render3d
 import time
 import epsm
 import cv2
 
-import read_camera
-
-RENDER_LOOP = True
-
-vision.activate_camera()
-if RENDER_LOOP:
-    env = render3d.create_env()
+RENDER_LOOP = False
+#
+# if RENDER_LOOP:
+#     env = render3d.create_env()
 
 dp = cv2.aruco.DetectorParameters()
 arucoDict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_5X5_250)
@@ -30,14 +27,13 @@ def draw(img, corners, imgpts):
     return img
 
 def main():
-    mtx = np.loadtxt('calib_images/laptop/calib_mtx.calib')
-    dist = np.loadtxt('calib_images/laptop/calib_dist.calib')
-
+    mtx = np.loadtxt('calib_images/rpi/calib_mtx.calib')
+    dist = np.loadtxt('calib_images/rpi/calib_dist.calib')
 
     t = time.time()
     while True:
         #img = vision.get_camera_image()
-        img = read_camera.get_image()
+        img = read_camera.get_image('192.168.137.240')
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         corners, ids, rejected = ad.detectMarkers(gray)
         cv2.aruco.drawDetectedMarkers(img, corners, ids)
@@ -47,11 +43,11 @@ def main():
 
             for rvec, tvec in zip(rvecs, tvecs):
                 cv2.drawFrameAxes(img, mtx, dist, rvec, tvec, 1)
-            if RENDER_LOOP:
-                render3d.update(ids, tvecs, rvecs, env)
-        else:
-            if RENDER_LOOP:
-                render3d.update_no_tags(env)
+        #     if RENDER_LOOP:
+        #         render3d.update(ids, tvecs, rvecs, env)
+        # else:
+        #     if RENDER_LOOP:
+        #         render3d.update_no_tags(env)
 
 
         cv2.imshow("Robert Ops", cv2.resize(img, (900,600)))

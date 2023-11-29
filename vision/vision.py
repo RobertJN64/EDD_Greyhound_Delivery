@@ -1,5 +1,6 @@
 from subsystem import Subsystem
 from vision.camera import Camera
+from time import sleep
 
 class Vision(Subsystem):
     def __init__(self):
@@ -8,4 +9,4 @@ class Vision(Subsystem):
 
     def _loop(self):
         while not self._should_kill:
-            pass
+            sleep(0.5)

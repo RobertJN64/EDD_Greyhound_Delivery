@@ -1,5 +1,6 @@
 from hardware.motor_controller_emulator import MotorController_Emulator as MotorController_Emulator
 from subsystem import Subsystem
+from time import sleep
 
 class LeftMotor:
     fwd_pin = 11
@@ -20,7 +21,7 @@ class DT_Emulator(Subsystem):
 
     def _loop(self):
         while not self._should_kill:
-            pass
+            sleep(0.5)
         self._left_motor.stop()
         self._right_motor.stop()
 

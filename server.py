@@ -14,13 +14,20 @@ def home():
 @app.route('/camera')
 def get_camera_array_fast():
     img = robot.vision.camera.read()
-    # img = cv2.resize(img, (320,320))
+    w = int(flask.request.args.get('w'))
+    h = int(flask.request.args.get('h'))
+    img = cv2.resize(img, (w,h))
     _, buf = cv2.imencode('.jpg', img)
     return base64.b64encode(buf)
+
+@app.route('/camera_full')
+def get_camera_array_full():
+    img = robot.vision.camera.read()
+    _, buf = cv2.imencode('.jpg', img)
+    return base64.b64encode(buf)
+
 
 create_WebController(robot, 'robot', app, create_private_interface=False)
 
 def startFlask():
-    app.run(host="0.0.0.0", port=80) #TODO - flask debug
-
-startFlask()
+    app.run(host="0.0.0.0", port=80)

@@ -46,7 +46,7 @@ def main():
         t = time.time()
         img = get_image('192.168.137.240')
         #img = get_image('127.0.0.1')
-        cv2.imshow("Robert Ops", img)
+        cv2.imshow("Robert Ops", chessboard(img))
         k = cv2.waitKey(1)
         print(f"FPS: {round(1 / (time.time() - t), 2)}")
 

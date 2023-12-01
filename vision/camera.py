@@ -2,7 +2,6 @@ import threading
 import time
 import cv2
 
-
 class Camera:
     def __init__(self):
         self._cap = cv2.VideoCapture(0)
@@ -15,9 +14,7 @@ class Camera:
             time.sleep(0.01)
 
     # retrieve latest frame
-    def read(self):
-        t = time.time()
+    def read(self, w=800, h=640):
         self._cap.grab()
         ret, frame = self._cap.retrieve()
-        print(time.time() - t)
-        return frame
+        return cv2.convertScaleAbs(cv2.resize(frame, (w,h)), alpha=1.5, beta=0.5)

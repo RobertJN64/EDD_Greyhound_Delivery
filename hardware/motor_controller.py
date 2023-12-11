@@ -1,4 +1,4 @@
-from motor_controller_emulator import MotorController_Emulator
+from hardware.motor_controller_emulator import MotorController_Emulator
 import RPi.GPIO as GPIO
 GPIO.setmode(GPIO.BCM)
 

@@ -69,23 +69,23 @@ class IMU_Emulator(Subsystem):
 class IMU(IMU_Emulator):
     def __init__(self):
         import smbus
-        self.bus = smbus.SMBus(1)  # or bus = smbus.SMBus(0) for older version boards
+        self._bus = smbus.SMBus(1)  # or bus = smbus.SMBus(0) for older version boards
         # write to sample rate register
-        self.bus.write_byte_data(MPU6050.Device_Address, MPU6050.SMPLRT_DIV, 7)
+        self._bus.write_byte_data(MPU6050.Device_Address, MPU6050.SMPLRT_DIV, 7)
         # Write to power management register
-        self.bus.write_byte_data(MPU6050.Device_Address, MPU6050.PWR_MGMT_1, 1)
+        self._bus.write_byte_data(MPU6050.Device_Address, MPU6050.PWR_MGMT_1, 1)
         # Write to Configuration register
-        self.bus.write_byte_data(MPU6050.Device_Address, MPU6050.CONFIG, 0)
+        self._bus.write_byte_data(MPU6050.Device_Address, MPU6050.CONFIG, 0)
         # Write to Gyro configuration register
-        self.bus.write_byte_data(MPU6050.Device_Address, MPU6050.GYRO_CONFIG, 24)
+        self._bus.write_byte_data(MPU6050.Device_Address, MPU6050.GYRO_CONFIG, 24)
         # Write to interrupt enable register
-        self.bus.write_byte_data(MPU6050.Device_Address, MPU6050.INT_ENABLE, 1)
+        self._bus.write_byte_data(MPU6050.Device_Address, MPU6050.INT_ENABLE, 1)
         super().__init__()
 
     def _read_raw_data(self, addr):
         # Accelero and Gyro value are 16-bit
-        high = self.bus.read_byte_data(MPU6050.Device_Address, addr)
-        low = self.bus.read_byte_data(MPU6050.Device_Address, addr + 1)
+        high = self._bus.read_byte_data(MPU6050.Device_Address, addr)
+        low = self._bus.read_byte_data(MPU6050.Device_Address, addr + 1)
 
         # concatenate higher and lower value
         value = ((high << 8) | low)

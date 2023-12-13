@@ -1,13 +1,11 @@
-import cv2
 import matplotlib.pyplot as plt
+import requests
+import json
+import time
+import cv2
+
 
 c_matrix = ['red', 'orange', 'blue', 'black']
-
-def create_env():
-    fig = plt.figure()
-    ax = fig.add_subplot(projection='3d')
-    plt.show(block=False)
-    return ax
 
 def update(ids, tags, tag_rvecs, ax):
     ax.clear()
@@ -52,5 +50,21 @@ def update(ids, tags, tag_rvecs, ax):
     plt.draw()
     plt.pause(0.01)
 
-def update_no_tags(ax):
-    update([], [], [], ax)
+
+def main():
+    fig = plt.figure()
+    ax = fig.add_subplot(projection='3d')
+    plt.show(block=False)
+
+    while True:
+        t = requests.get('http://127.0.0.1/tag_data').text
+        print(t)
+        j = json.loads(t)
+        update(j['ids'], j['tvecs'], j['rvecs'], ax)
+        time.sleep(0.05)
+        if not plt.fignum_exists(fig.number):
+            break  # handle exit
+
+
+if __name__ == '__main__':
+    main()

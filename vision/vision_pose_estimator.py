@@ -38,6 +38,11 @@ class VisionPoseEstimator(Subsystem):
         self._mtx = np.loadtxt('vision/calib_mtx.calib')
         self._dist = np.loadtxt('vision/calib_dist.calib')
         self.tag_img = None
+
+        self.ids = []
+        self.rvecs = np.empty(0)
+        self.tvecs = np.empty(0)
+
         super().__init__()
 
     def _loop(self):
@@ -50,13 +55,19 @@ class VisionPoseEstimator(Subsystem):
             if len(corners) > 0:
                 rvecs, tvecs, _ = estimatePoseSingleMarkers(corners, 3, self._mtx, self._dist)
 
+                self.ids = ids
+                self.rvecs = rvecs
+                self.tvecs = tvecs
+
                 if self.enable_image_vis:
                     for rvec, tvec in zip(rvecs, tvecs):
                         cv2.drawFrameAxes(img, self._mtx, self._dist, rvec, tvec, 1)
                         self.tag_img = img.copy()
 
-                    #render3d.update(ids, tvecs, rvecs, env)
             else:
                 if self.enable_image_vis:
                     self.tag_img = img.copy()
-            #     render3d.update_no_tags(env)
+
+                self.ids = []
+                self.rvecs = np.empty(0)
+                self.tvecs = np.empty(0)

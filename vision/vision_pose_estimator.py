@@ -39,9 +39,9 @@ class VisionPoseEstimator(Subsystem):
         self._dist = np.loadtxt('vision/calib_dist.calib')
         self.tag_img = None
 
-        self.ids = []
-        self.rvecs = np.empty(0)
-        self.tvecs = np.empty(0)
+        self.ids = np.empty(0)
+        self.rvecs = []
+        self.tvecs = []
 
         super().__init__()
 
@@ -68,6 +68,6 @@ class VisionPoseEstimator(Subsystem):
                 if self.enable_image_vis:
                     self.tag_img = img.copy()
 
-                self.ids = []
-                self.rvecs = np.empty(0)
-                self.tvecs = np.empty(0)
+                self.ids = np.empty(0)
+                self.rvecs = []
+                self.tvecs = []

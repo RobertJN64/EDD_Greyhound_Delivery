@@ -27,11 +27,11 @@ def get_tag_view():
 
 @app.route('/tag_data')
 def get_tag_data():
-    return json.dumps({'ids': robot.vision.ids,
-                       'tvecs': robot.vision.tvecs.tolist(),
-                       'rvecs': robot.vision.rvecs.tolist()})
+    return json.dumps({'ids': robot.vision.ids.tolist(),
+                       'tvecs': [tvec.tolist() for tvec in robot.vision.tvecs],
+                       'rvecs': [rvec.tolist() for rvec in robot.vision.rvecs]})
 
-# create_WebController(robot, 'robot', app, create_private_interface=False)
+create_WebController(robot, 'robot', app, create_private_interface=True)
 
 def startFlask():
     app.run(host="0.0.0.0", port=80)

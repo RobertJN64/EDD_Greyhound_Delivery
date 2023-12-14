@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import numpy as np
 import requests
 import json
 import time
@@ -34,7 +35,7 @@ def update(ids, tags, tag_rvecs, ax):
         ax.plot(xs, zs, ys, c=color) #camera y = z
 
     for index, tag, rvec in zip(ids, tags, tag_rvecs):
-        rot_matrix = cv2.Rodrigues(rvec)[0]
+        rot_matrix = cv2.Rodrigues(np.array(rvec))[0]
         render_tag(*tag, rot_matrix, c_matrix[index[0]])
 
     #tags.append([0,0,0]) #camera pos

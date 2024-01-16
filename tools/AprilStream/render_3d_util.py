@@ -1,14 +1,10 @@
-import matplotlib.pyplot as plt
 import numpy as np
-import requests
-import json
-import time
 import cv2
 
 
 c_matrix = ['red', 'orange', 'blue', 'black']
 
-def update(ids, tags, tag_rvecs, ax):
+def render_3d_tag_pos(ids, tags, tag_rvecs, ax):
     ax.clear()
     def compute_corner_offset(xbase, ybase, zbase, xoff, yoff, zoff, rot):
         return (
@@ -48,24 +44,3 @@ def update(ids, tags, tag_rvecs, ax):
 
     #ax.scatter3D([0],[0],[0], s=10)
     ax.quiver(0, 0, 0, 0, 5, 0)
-    plt.draw()
-    plt.pause(0.01)
-
-
-def main():
-    fig = plt.figure()
-    ax = fig.add_subplot(projection='3d')
-    plt.show(block=False)
-
-    while True:
-        t = requests.get('http://192.168.137.68/tag_data').text
-        print(t)
-        j = json.loads(t)
-        update(j['ids'], j['tvecs'], j['rvecs'], ax)
-        time.sleep(0.05)
-        if not plt.fignum_exists(fig.number):
-            break  # handle exit
-
-
-if __name__ == '__main__':
-    main()

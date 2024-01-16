@@ -20,7 +20,6 @@ class Robot:
 
         # state machine
         self.enable_IMU_drive = False
-        self.has_stopped_IMU_drive = False
         self.IMU_drive_target_speed = 0
         self.IMU_CF = 5 #correction force
 

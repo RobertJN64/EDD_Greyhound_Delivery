@@ -18,6 +18,6 @@ class MotorController_Emulator:
         if speed == 0:
             self.stop()
         elif speed > 0:
-            self.forward(abs(speed))
+            self.forward(min(abs(speed), 100))
         else:
-            self.backward(abs(speed))
+            self.backward(min(abs(speed), 100))

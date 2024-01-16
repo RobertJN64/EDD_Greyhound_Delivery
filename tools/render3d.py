@@ -58,7 +58,7 @@ def main():
     plt.show(block=False)
 
     while True:
-        t = requests.get('http://127.0.0.1/tag_data').text
+        t = requests.get('http://192.168.137.68/tag_data').text
         print(t)
         j = json.loads(t)
         update(j['ids'], j['tvecs'], j['rvecs'], ax)

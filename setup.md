@@ -44,4 +44,5 @@ Add line:
 sudo pip install opencv-python
 sudo pip install PyObjectInterface
 sudo pip install --upgrade typing_extensions
+enable i2c #sudo raspi-config
 ```

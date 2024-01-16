@@ -12,7 +12,7 @@ def get_image(ip: str):
 def main():
     while True:
         t = time.time()
-        img = get_image('192.168.137.240/tag_view')
+        img = get_image('192.168.137.68/tag_view')
         #img = get_image('127.0.0.1')
         cv2.imshow("Robert Ops", cv2.flip(img, 0) )
         cv2.waitKey(1)

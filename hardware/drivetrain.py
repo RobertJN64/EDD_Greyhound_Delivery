@@ -12,22 +12,10 @@ class RightFrontMotor:
     rev_pin = 10
     spd_pin = 11
 
-class LeftBackMotor:
-    fwd_pin = 24
-    rev_pin = 25
-    spd_pin = 23
-
-class RightBackMotor:
-    fwd_pin = 22
-    rev_pin = 27
-    spd_pin = 17
-
 class DT_Emulator(Subsystem):
     def __init__(self, mc_class = MotorController_Emulator):
         self._left_f_motor = mc_class(LeftFrontMotor.fwd_pin, LeftFrontMotor.rev_pin, LeftFrontMotor.spd_pin)
-        self._left_b_motor = mc_class(LeftBackMotor.fwd_pin, LeftBackMotor.rev_pin, LeftBackMotor.spd_pin)
         self._right_f_motor = mc_class(RightFrontMotor.fwd_pin, RightFrontMotor.rev_pin, RightFrontMotor.spd_pin)
-        self._right_b_motor = mc_class(RightBackMotor.fwd_pin, RightBackMotor.rev_pin, RightBackMotor.spd_pin)
         super().__init__()
 
     def _loop(self):
@@ -37,16 +25,11 @@ class DT_Emulator(Subsystem):
 
     def set_speeds(self, left, right):
         self._left_f_motor.set_speed(left)
-        self._left_b_motor.set_speed(left)
-
         self._right_f_motor.set_speed(right)
-        self._right_b_motor.set_speed(right)
 
     def stop(self):
         self._left_f_motor.stop()
         self._right_f_motor.stop()
-        self._left_b_motor.stop()
-        self._right_b_motor.stop()
 
 
 class DT(DT_Emulator):

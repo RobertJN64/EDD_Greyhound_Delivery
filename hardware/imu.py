@@ -66,6 +66,12 @@ class IMU_Emulator(Subsystem):
                     print("Reset IMU angle...")
                     self._reset()
 
+    def heading(self):
+        """returns angle -180 to 180"""
+        if self.angle > 180:
+            return self.angle - 360
+        return self.angle
+
 class IMU(IMU_Emulator):
     def __init__(self):
         import smbus

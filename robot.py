@@ -22,7 +22,7 @@ class Robot:
         self.enable_IMU_drive = False
         self.has_stopped_IMU_drive = False
         self.IMU_drive_target_speed = 0
-        self.IMU_CF = 1 #correction force
+        self.IMU_CF = 5 #correction force
 
         threading.Thread(target=self._IMU_drive_worker).start()
 
@@ -43,8 +43,8 @@ class Robot:
             if self.enable_IMU_drive:
                 self.imu._reset() #do non-async reset
                 while self.enable_IMU_drive:
-                    left = self.IMU_drive_target_speed + self.imu.angle * self.IMU_CF
-                    right = self.IMU_drive_target_speed - self.imu.angle * self.IMU_CF
+                    left = self.IMU_drive_target_speed - self.imu.heading() * self.IMU_CF
+                    right = self.IMU_drive_target_speed + self.imu.heading() * self.IMU_CF
 
                     self.dt.set_speeds(left, right)
                     sleep(0.05)

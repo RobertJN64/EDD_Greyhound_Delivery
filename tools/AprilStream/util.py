@@ -2,6 +2,7 @@ from PIL import Image, ImageTk
 import numpy as np
 import requests
 import base64
+import json
 import cv2
 
 def get_image(ip: str, tag_view = True, flip_vert = False):
@@ -60,3 +61,8 @@ def render_3d_tag_pos(ids, tags, tag_rvecs, ax):
 
     #ax.scatter3D([0],[0],[0], s=10)
     ax.quiver(0, 0, 0, 0, 5, 0)
+
+def get_and_render_tags(ip: str, ax):
+    t = requests.get('http://' + ip + '/tag_data').text
+    j = json.loads(t)
+    render_3d_tag_pos(j['ids'], j['tvecs'], j['rvecs'], ax)

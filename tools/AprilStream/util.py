@@ -1,3 +1,5 @@
+import math
+
 from PIL import Image, ImageTk
 import numpy as np
 import requests
@@ -65,4 +67,14 @@ def render_3d_tag_pos(ids, tags, tag_rvecs, ax):
 def get_tag_data(ip: str):
     t = requests.get('http://' + ip + '/tag_data').text
     return json.loads(t)
+
+def get_roll_pitch_yaw(rvec):
+    rot_matrix = cv2.Rodrigues(np.array(rvec))[0]
+
+    # https://en.wikipedia.org/wiki/Rotation_formalisms_in_three_dimensions#Rotation_matrix_.E2.86.94_Euler_angles
+    roll = math.atan2(rot_matrix[3-1][1-1], rot_matrix[3-1][2-1])
+    pitch = math.acos(rot_matrix[3-1][3-1])
+    yaw = -math.atan2(rot_matrix[1-1][3-1], rot_matrix[2-1][3-1])
+
+    return [math.degrees(roll)],[math.degrees(pitch)],[math.degrees(yaw)]
 

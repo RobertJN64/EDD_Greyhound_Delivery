@@ -1,4 +1,4 @@
-from util import get_tag_data, get_image, render_3d_tag_pos
+from util import get_tag_data, get_image, render_3d_tag_pos, get_roll_pitch_yaw
 import TKinterModernThemes as TKMT
 import tkinter as tk
 
@@ -20,9 +20,9 @@ def generate_xyz_labels(x, y, z):
 
 def generate_rpy_labels(roll, pitch, yaw):
     return (
-        "Roll (+???): " + no_data_round(roll),
-        "Pitch (+???): " + no_data_round(pitch),
-        "Yaw (+???): " + no_data_round(yaw)
+        "Roll (+clockwise): " + no_data_round(roll),
+        "Pitch (+top_closer): " + no_data_round(pitch),
+        "Yaw (+right_closer): " + no_data_round(yaw)
     )
 
 class App(TKMT.ThemedTKinterFrame):
@@ -43,6 +43,8 @@ class App(TKMT.ThemedTKinterFrame):
         self.tag_view_bool = tk.BooleanVar(value=True)
         buttonframe.Checkbutton('Flip Image', self.flip_bool)
         buttonframe.Checkbutton('Tag View', self.tag_view_bool, col=1)
+
+        #TODO - inputs for calc is at target
 
         tag_data_frame = self.addLabelFrame('Tag Data', col=1)
         self.current_tag_var = tk.StringVar()
@@ -81,7 +83,7 @@ class App(TKMT.ThemedTKinterFrame):
         for ind, i in enumerate(j['ids']):
             if i[0] == int(self.current_tag_var.get()):
                 x, y, z = generate_xyz_labels(*j['tvecs'][ind]) #unpack arr
-                roll, pitch, yaw = generate_rpy_labels(None, None, None)
+                roll, pitch, yaw = generate_rpy_labels(*get_roll_pitch_yaw(j['rvecs'][ind]))
                 break
         else:
             x, y, z = generate_xyz_labels(None, None, None)

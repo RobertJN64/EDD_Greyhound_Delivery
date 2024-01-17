@@ -1,6 +1,22 @@
+from PIL import Image, ImageTk
 import numpy as np
+import requests
+import base64
 import cv2
 
+def get_image(ip: str, tag_view = True, flip_vert = False):
+    if tag_view:
+        addr = 'http://' + ip + '/tag_view'
+    else:
+        addr = 'http://' + ip + '/camera'
+
+    jpg_original = base64.b64decode(requests.get(addr).text)
+    cv2_img = cv2.imdecode(np.frombuffer(jpg_original, dtype=np.uint8), flags=1)
+
+    if flip_vert:
+        cv2_img = cv2.flip(cv2_img, 0)
+
+    return ImageTk.PhotoImage(image=Image.fromarray(cv2.cvtColor(cv2_img, cv2.COLOR_BGR2RGB)))
 
 c_matrix = ['red', 'orange', 'blue', 'black']
 

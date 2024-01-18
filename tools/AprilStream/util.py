@@ -78,3 +78,6 @@ def get_roll_pitch_yaw(rvec):
 
     return [math.degrees(roll)],[math.degrees(pitch)],[math.degrees(yaw)]
 
+def auto_stop():
+    requests.get('http://192.168.137.68/webcontroller/call_method/robot.stop_IMU_drive')
+

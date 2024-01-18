@@ -32,7 +32,7 @@ arucoDict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_5X5_250)
 ad = cv2.aruco.ArucoDetector(arucoDict, dp)
 
 class VisionPoseEstimator(Subsystem):
-    def __init__(self, enable_image_vis = True):
+    def __init__(self, flip = False, enable_image_vis = True):
         self.camera = Camera()
         self.enable_image_vis = enable_image_vis
         self._mtx = np.loadtxt('vision/calib_mtx.calib')
@@ -43,11 +43,17 @@ class VisionPoseEstimator(Subsystem):
         self.rvecs = []
         self.tvecs = []
 
+        self.flip = flip
+
         super().__init__()
 
     def _loop(self):
         while not self._should_kill:
             img = self.camera.read()
+            if self.flip:
+                img = cv2.flip(img, 0)
+                img = cv2.flip(img, 1)
+
             gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
             corners, ids, rejected = ad.detectMarkers(gray)
             cv2.aruco.drawDetectedMarkers(img, corners, ids)

@@ -1,4 +1,4 @@
-EMULATE = False
+EMULATE = True
 FLIP_CAM = not EMULATE
 
 if EMULATE:

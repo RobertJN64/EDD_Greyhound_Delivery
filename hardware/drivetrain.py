@@ -2,20 +2,20 @@ from hardware.motor_controller_emulator import MotorController_Emulator as Motor
 from subsystem import Subsystem
 from time import sleep
 
-class LeftFrontMotor:
+class LeftMotor:
     fwd_pin = 20
     rev_pin = 16
     spd_pin = 21
 
-class RightFrontMotor:
+class RightMotor:
     fwd_pin = 9
     rev_pin = 10
     spd_pin = 11
 
 class DT_Emulator(Subsystem):
     def __init__(self, mc_class = MotorController_Emulator):
-        self._left_f_motor = mc_class(LeftFrontMotor.fwd_pin, LeftFrontMotor.rev_pin, LeftFrontMotor.spd_pin)
-        self._right_f_motor = mc_class(RightFrontMotor.fwd_pin, RightFrontMotor.rev_pin, RightFrontMotor.spd_pin)
+        self._left_motor = mc_class(LeftMotor.fwd_pin, LeftMotor.rev_pin, LeftMotor.spd_pin)
+        self._right_motor = mc_class(RightMotor.fwd_pin, RightMotor.rev_pin, RightMotor.spd_pin)
         super().__init__()
 
     def _loop(self):
@@ -24,12 +24,12 @@ class DT_Emulator(Subsystem):
         self.stop()
 
     def set_speeds(self, left, right):
-        self._left_f_motor.set_speed(left)
-        self._right_f_motor.set_speed(right)
+        self._left_motor.set_speed(left)
+        self._right_motor.set_speed(right)
 
     def stop(self):
-        self._left_f_motor.stop()
-        self._right_f_motor.stop()
+        self._left_motor.stop()
+        self._right_motor.stop()
 
 
 class DT(DT_Emulator):

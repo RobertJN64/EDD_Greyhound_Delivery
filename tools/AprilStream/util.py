@@ -7,11 +7,16 @@ import base64
 import json
 import cv2
 
-def get_image(ip: str, tag_view = True, flip_vert = False):
+def get_image(ip: str, num_id = '0', tag_view = True, flip_vert = False):
+    if num_id == '':
+        num_id = '0'
+
     if tag_view:
         addr = 'http://' + ip + '/tag_view'
     else:
         addr = 'http://' + ip + '/camera'
+
+    addr += '?id=' + num_id
 
     jpg_original = base64.b64decode(requests.get(addr).text)
     cv2_img = cv2.imdecode(np.frombuffer(jpg_original, dtype=np.uint8), flags=1)
@@ -64,8 +69,11 @@ def render_3d_tag_pos(ids, tags, tag_rvecs, ax):
     #ax.scatter3D([0],[0],[0], s=10)
     ax.quiver(0, 0, 0, 0, 5, 0)
 
-def get_tag_data(ip: str):
-    t = requests.get('http://' + ip + '/tag_data').text
+def get_tag_data(ip: str, num_id = '0'):
+    if num_id == '':
+        num_id = '0'
+
+    t = requests.get('http://' + ip + '/tag_data?id=' + num_id).text
     return json.loads(t)
 
 def get_roll_pitch_yaw(rvec):

@@ -3,8 +3,8 @@ import time
 import cv2
 
 class Camera:
-    def __init__(self):
-        self._cap = cv2.VideoCapture(0)
+    def __init__(self, num_id: int = 0):
+        self._cap = cv2.VideoCapture(num_id)
         #threading.Thread(target=self._reader, daemon=True).start()
 
     # grab frames as soon as they are available - this clears out the automatic buffer an ensures read is always recent

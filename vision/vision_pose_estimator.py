@@ -33,47 +33,57 @@ ad = cv2.aruco.ArucoDetector(arucoDict, dp)
 
 class VisionPoseEstimator(Subsystem):
     def __init__(self, flip = False, enable_image_vis = True):
-        self.camera = Camera()
+        self.camera_0 = Camera(0)
+        self.camera_1 = Camera(1)
+        self.camera_2 = Camera(2)
+
         self.enable_image_vis = enable_image_vis
         self._mtx = np.loadtxt('vision/calib_mtx.calib')
         self._dist = np.loadtxt('vision/calib_dist.calib')
-        self.tag_img = None
+        self.tag_img = [None, None, None]
 
-        self.ids = np.empty(0)
-        self.rvecs = []
-        self.tvecs = []
+        self.ids = [np.empty(0), np.empty(0), np.empty(0)]
+        self.rvecs = [[], [], []]
+        self.tvecs = [[], [], []]
 
         self.flip = flip
 
         super().__init__()
 
+    def update_tag_pos(self, img, indx):
+        if self.flip:
+            img = cv2.flip(img, 0)
+            img = cv2.flip(img, 1)
+
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        corners, ids, rejected = ad.detectMarkers(gray)
+        cv2.aruco.drawDetectedMarkers(img, corners, ids)
+
+        if len(corners) > 0:
+            rvecs, tvecs, _ = estimatePoseSingleMarkers(corners, 3, self._mtx, self._dist)
+
+            self.ids[indx] = ids
+            self.rvecs[indx] = rvecs
+            self.tvecs[indx] = tvecs
+
+            if self.enable_image_vis:
+                for rvec, tvec in zip(rvecs, tvecs):
+                    cv2.drawFrameAxes(img, self._mtx, self._dist, rvec, tvec, 1)
+                    self.tag_img[indx] = img.copy()
+
+        else:
+            if self.enable_image_vis:
+                self.tag_img[indx] = img.copy()
+
+            self.ids[indx] = np.empty(0)
+            self.rvecs[indx] = []
+            self.tvecs[indx] = []
+
     def _loop(self):
         while not self._should_kill:
-            img = self.camera.read()
-            if self.flip:
-                img = cv2.flip(img, 0)
-                img = cv2.flip(img, 1)
+            self.update_tag_pos(self.camera_0.read(), 0)
+            self.update_tag_pos(self.camera_1.read(), 1)
+            self.update_tag_pos(self.camera_2.read(), 2)
 
-            gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-            corners, ids, rejected = ad.detectMarkers(gray)
-            cv2.aruco.drawDetectedMarkers(img, corners, ids)
-
-            if len(corners) > 0:
-                rvecs, tvecs, _ = estimatePoseSingleMarkers(corners, 3, self._mtx, self._dist)
-
-                self.ids = ids
-                self.rvecs = rvecs
-                self.tvecs = tvecs
-
-                if self.enable_image_vis:
-                    for rvec, tvec in zip(rvecs, tvecs):
-                        cv2.drawFrameAxes(img, self._mtx, self._dist, rvec, tvec, 1)
-                        self.tag_img = img.copy()
-
-            else:
-                if self.enable_image_vis:
-                    self.tag_img = img.copy()
-
-                self.ids = np.empty(0)
-                self.rvecs = []
-                self.tvecs = []
+            #TODO - individual calibrations?
+            #TODO - flip per cam

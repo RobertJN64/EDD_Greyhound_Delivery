@@ -41,8 +41,11 @@ class App(TKMT.ThemedTKinterFrame):
         buttonframe.Button("Start Stream", self.activate_streams, col=1)
         self.flip_bool = tk.BooleanVar(value=False)
         self.tag_view_bool = tk.BooleanVar(value=True)
+        self.num_id_int = tk.StringVar(value='0')
         buttonframe.Checkbutton('Flip Image', self.flip_bool)
         buttonframe.Checkbutton('Tag View', self.tag_view_bool, col=1)
+        buttonframe.Text("Camera ID:")
+        buttonframe.Entry(self.num_id_int, col=1)
 
         targetframe = self.addLabelFrame("Target Pos", col=2)
 
@@ -65,7 +68,7 @@ class App(TKMT.ThemedTKinterFrame):
         self.auto_stop_var = tk.BooleanVar(value=False)
         targetframe.Checkbutton("Auto stop", self.auto_stop_var, col=0)
 
-        tag_data_frame = self.addLabelFrame('Tag Data', col=1, rowspan=2)
+        tag_data_frame = self.addLabelFrame('Tag Data', col=1)
         self.current_tag_var = tk.StringVar()
         tag_data_frame.OptionMenu(list(map(str, range(0,4))), self.current_tag_var, colspan=2)
         x, z, y = generate_xyz_labels(None, None, None)
@@ -114,7 +117,7 @@ class App(TKMT.ThemedTKinterFrame):
 
 
     def update_tag_data(self):
-        j = get_tag_data(ip_addr)
+        j = get_tag_data(ip_addr, self.num_id_int.get())
         render_3d_tag_pos(j['ids'], j['tvecs'], j['rvecs'], self.tag_pos_ax)
         self.tag_pos_canvas.draw()
 
@@ -144,7 +147,8 @@ class App(TKMT.ThemedTKinterFrame):
         #endregion
 
     def update_camera_feed_image(self):
-        imgtk = get_image(ip_addr, tag_view=self.tag_view_bool.get(), flip_vert=self.flip_bool.get())
+        imgtk = get_image(ip_addr, num_id=self.num_id_int.get(),
+                          tag_view=self.tag_view_bool.get(), flip_vert=self.flip_bool.get())
         self.camera_image.configure(image=imgtk)
         self.camera_image.image = imgtk
 

@@ -87,4 +87,3 @@ class VisionPoseEstimator(Subsystem):
             self.update_tag_pos(self.camera_2.read(), 2)
 
             #TODO - individual calibrations?
-            #TODO - flip per cam

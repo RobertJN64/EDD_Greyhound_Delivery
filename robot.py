@@ -1,12 +1,16 @@
-EMULATE = True
-FLIP_CAM = not EMULATE
+EMULATE = False
 
 if EMULATE:
     from hardware.drivetrain import DT_Emulator as DT
     from hardware.imu import IMU_Emulator as IMU
+    FLIP = [False, False, False]
+    CAM_IDS = [0,1,2]
+
 else:
     from hardware.drivetrain import DT as DT
     from hardware.imu import IMU as IMU
+    FLIP = [False, False, True]
+    CAM_IDS = [0, 2, 4]
 
 from vision.vision_pose_estimator import VisionPoseEstimator
 from time import sleep
@@ -17,7 +21,7 @@ class Robot:
     def __init__(self):
         self.imu = IMU()
         self.dt = DT()
-        self.vision = VisionPoseEstimator(flip=FLIP_CAM)
+        self.vision = VisionPoseEstimator(flip=FLIP, cam_ids=CAM_IDS)
 
         # state machine
         self.enable_IMU_drive = False

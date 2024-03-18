@@ -32,10 +32,11 @@ arucoDict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_5X5_250)
 ad = cv2.aruco.ArucoDetector(arucoDict, dp)
 
 class VisionPoseEstimator(Subsystem):
-    def __init__(self, flip = False, enable_image_vis = True):
-        self.camera_0 = Camera(0)
-        self.camera_1 = Camera(1)
-        self.camera_2 = Camera(2)
+    def __init__(self, flip, cam_ids, enable_image_vis = True):
+
+        self.camera_0 = Camera(cam_ids[0])
+        self.camera_1 = Camera(cam_ids[1])
+        self.camera_2 = Camera(cam_ids[2])
 
         self.enable_image_vis = enable_image_vis
         self._mtx = np.loadtxt('vision/calib_mtx.calib')
@@ -51,7 +52,7 @@ class VisionPoseEstimator(Subsystem):
         super().__init__()
 
     def update_tag_pos(self, img, indx):
-        if self.flip:
+        if self.flip[indx]:
             img = cv2.flip(img, 0)
             img = cv2.flip(img, 1)
 

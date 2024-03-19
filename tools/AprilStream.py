@@ -1,6 +1,8 @@
 from util import get_tag_data, get_image, render_3d_tag_pos, get_roll_pitch_yaw, auto_stop
 import TKinterModernThemes as TKMT
 import tkinter as tk
+import datetime
+import cv2
 
 stream_running = False
 ip_addr = '192.168.137.68'
@@ -39,11 +41,16 @@ class App(TKMT.ThemedTKinterFrame):
         self.ip_addr_tk_var = tk.StringVar(value = ip_addr)
         buttonframe.Entry(self.ip_addr_tk_var)
         buttonframe.Button("Start Stream", self.activate_streams, col=1)
+
         self.flip_bool = tk.BooleanVar(value=False)
         self.tag_view_bool = tk.BooleanVar(value=True)
+        self.chessboard_bool = tk.BooleanVar(value=False)
         self.num_id_int = tk.StringVar(value='0')
+
         buttonframe.Checkbutton('Flip Image', self.flip_bool)
         buttonframe.Checkbutton('Tag View', self.tag_view_bool, col=1)
+        buttonframe.Checkbutton('Chessboard', self.chessboard_bool)
+        buttonframe.Button('Save', self.save_calibration_image, col=1)
         buttonframe.Text("Camera ID:")
         buttonframe.Entry(self.num_id_int, col=1)
 
@@ -87,6 +94,8 @@ class App(TKMT.ThemedTKinterFrame):
         tag_data_frame.Label('', widgetkwargs={'textvariable': self.tdf_roll_var}, sticky='w')
         tag_data_frame.Label('', widgetkwargs={'textvariable': self.tdf_pitch_var}, sticky='w')
         tag_data_frame.Label('', widgetkwargs={'textvariable': self.tdf_yaw_var}, sticky='w')
+
+        self.cv_img = None
 
         self.debugPrint()
         self.run()
@@ -147,8 +156,9 @@ class App(TKMT.ThemedTKinterFrame):
         #endregion
 
     def update_camera_feed_image(self):
-        imgtk = get_image(ip_addr, num_id=self.num_id_int.get(),
-                          tag_view=self.tag_view_bool.get(), flip_vert=self.flip_bool.get())
+        imgtk, self.cv_img = get_image(ip_addr, num_id=self.num_id_int.get(), tag_view=self.tag_view_bool.get(),
+                                       flip_vert=self.flip_bool.get(), chessboard = self.chessboard_bool.get())
+
         self.camera_image.configure(image=imgtk)
         self.camera_image.image = imgtk
 
@@ -161,6 +171,10 @@ class App(TKMT.ThemedTKinterFrame):
 
         stream_running = True
 
+    def save_calibration_image(self):
+        fname = datetime.datetime.now().strftime("%m-%d-%Y %I-%M-%S %p") + '.png'
+        print("Saving image as: " + fname)
+        print(cv2.imwrite('tools/calib_images/' + fname, self.cv_img))
 
 if __name__ == "__main__":
     App("park", "dark")

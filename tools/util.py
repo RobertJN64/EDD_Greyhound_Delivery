@@ -7,7 +7,7 @@ import base64
 import json
 import cv2
 
-def get_image(ip: str, num_id = '0', tag_view = True, flip_vert = False):
+def get_image(ip: str, num_id = '0', tag_view = True, flip_vert = False, chessboard = False):
     if num_id == '':
         num_id = '0'
 
@@ -24,7 +24,10 @@ def get_image(ip: str, num_id = '0', tag_view = True, flip_vert = False):
     if flip_vert:
         cv2_img = cv2.flip(cv2_img, 0)
 
-    return ImageTk.PhotoImage(image=Image.fromarray(cv2.cvtColor(cv2_img, cv2.COLOR_BGR2RGB)))
+    if chessboard:
+        cv2_img = draw_chessboard(cv2_img)
+
+    return ImageTk.PhotoImage(image=Image.fromarray(cv2.cvtColor(cv2_img, cv2.COLOR_BGR2RGB))), cv2_img
 
 c_matrix = ['red', 'orange', 'blue', 'black']
 
@@ -89,3 +92,15 @@ def get_roll_pitch_yaw(rvec):
 def auto_stop():
     requests.get('http://192.168.137.68/webcontroller/call_method/robot.stop_IMU_drive')
 
+CHECKERBOARD = (5, 5)
+criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
+
+def draw_chessboard(img):
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    ret, corners = cv2.findChessboardCorners(gray, CHECKERBOARD,
+                                             cv2.CALIB_CB_ADAPTIVE_THRESH + cv2.CALIB_CB_FAST_CHECK + cv2.CALIB_CB_NORMALIZE_IMAGE)
+    if ret:
+        corners2 = cv2.cornerSubPix(gray, corners, (11, 11), (-1, -1), criteria)
+        return cv2.drawChessboardCorners(img, CHECKERBOARD, corners2, ret)
+    else:
+        return img

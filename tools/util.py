@@ -24,10 +24,11 @@ def get_image(ip: str, num_id = '0', tag_view = True, flip_vert = False, chessbo
     if flip_vert:
         cv2_img = cv2.flip(cv2_img, 0)
 
+    raw = cv2_img
     if chessboard:
-        cv2_img = draw_chessboard(cv2_img)
+        cv2_img = draw_chessboard(cv2_img.copy())
 
-    return ImageTk.PhotoImage(image=Image.fromarray(cv2.cvtColor(cv2_img, cv2.COLOR_BGR2RGB))), cv2_img
+    return ImageTk.PhotoImage(image=Image.fromarray(cv2.cvtColor(cv2_img, cv2.COLOR_BGR2RGB))), raw
 
 c_matrix = ['red', 'orange', 'blue', 'black']
 

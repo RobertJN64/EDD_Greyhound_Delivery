@@ -1,0 +1,15 @@
+{
+  "schema": {
+    "id": "tag id number (int)",
+    "xyz": "tag location (float inches)"
+  },
+
+  "tags": [
+    {
+      "id": 0,
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  ]
+}

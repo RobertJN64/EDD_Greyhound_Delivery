@@ -17,7 +17,7 @@ objp[0, :, :2] = np.mgrid[0:CHECKERBOARD[0], 0:CHECKERBOARD[1]].T.reshape(-1, 2)
 prev_img_shape = None
 
 # Extracting path of individual image stored in a given directory
-images = glob.glob('calib_images/rpi/*.png')
+images = glob.glob('calib_images/0/*.png')
 print(images)
 for fname in images:
     img = cv2.imread(fname)
@@ -54,6 +54,7 @@ passing the value of known 3D points (objpoints)
 and corresponding pixel coordinates of the 
 detected corners (imgpoints)
 """
+print(objpoints, imgpoints, gray.shape[::-1])
 ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
 
 print("Camera matrix : \n")
@@ -65,5 +66,5 @@ print(rvecs)
 print("tvecs : \n")
 print(tvecs)
 
-np.savetxt('new_calib_mtx.calib', mtx)
-np.savetxt('new_calib_dist.calib', dist)
+np.savetxt('0_calib_mtx.calib', mtx)
+np.savetxt('0_calib_dist.calib', dist)
